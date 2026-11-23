@@ -16,16 +16,33 @@ Vue BBS DiscuzX 复刻了 DiscuzX 的前端交互与核心功能，配合 Go 后
 
 ## 技术栈
 
-- 框架：Vue
+- 框架：Vue 3
+- 构建工具：Vite
 - 配套后端：[go_bbs_DiscuzX](https://github.com/tobycroft/go_bbs_DiscuzX)
 
 ## 项目结构
 
-（待补充）
+- `src`：源码（入口 `main.js`、根组件 `App.vue`）
+- `public`：静态资源
+- `vite.config.js`：Vite 配置
+- `.github/workflows/deploy.yml`：CI 构建并将 `dist` 部署到 [fe_bbs_DiscuzX](https://github.com/tobycroft/fe_bbs_DiscuzX) 的 `master` 分支
 
 ## 快速开始
 
-（待补充）
+```bash
+# 安装依赖
+npm install
+
+# 本地开发
+npm run dev
+
+# 生产构建（产物位于 dist/）
+npm run build
+```
+
+## 自动部署
+
+推送到 `main` 分支后，GitHub Actions 会自动构建 `dist` 并推送到 [fe_bbs_DiscuzX](https://github.com/tobycroft/fe_bbs_DiscuzX) 仓库的 `master` 分支。
 
 ## 贡献
 

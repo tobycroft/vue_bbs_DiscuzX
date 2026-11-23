@@ -1,0 +1,50 @@
+name: Deploy to fe_bbs_DiscuzX
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to fe_bbs_DiscuzX
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          cd dist
+          git init
+          git checkout -b master
+          git add .
+          git commit -m "deploy: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git remote add origin git@github.com:tobycroft/fe_bbs_DiscuzX.git
+          git push -f origin master
