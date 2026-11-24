@@ -28,10 +28,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy to fe_bbs_DiscuzX
+      - name: Setup deploy SSH key
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-          GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
         run: |
           mkdir -p ~/.ssh
           echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
@@ -41,6 +40,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Deploy to fe_bbs_DiscuzX (master)
+        env:
+          GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+        run: |
+          rm -rf dist/.git
           cd dist
           git init
           git checkout -b master
@@ -48,3 +52,16 @@ jobs:
           git commit -m "deploy: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           git remote add origin git@github.com:tobycroft/fe_bbs_DiscuzX.git
           git push -f origin master
+
+      - name: Deploy to fe_bbs_DiscuzX (gh-pages)
+        env:
+          GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+        run: |
+          rm -rf dist/.git
+          cd dist
+          git init
+          git checkout -b gh-pages
+          git add .
+          git commit -m "deploy: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git remote add origin git@github.com:tobycroft/fe_bbs_DiscuzX.git
+          git push -f origin gh-pages
