@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ForumIndex from '../views/ForumIndex.vue'
+import ForumDisplay from '../views/ForumDisplay.vue'
+import ViewThread from '../views/ViewThread.vue'
 
 const routes = [
   {
@@ -7,6 +9,18 @@ const routes = [
     name: 'ForumIndex',
     component: ForumIndex,
     meta: { title: '论坛首页' },
+  },
+  {
+    path: '/forum/:fid',
+    name: 'ForumDisplay',
+    component: ForumDisplay,
+    meta: { title: '版块' },
+  },
+  {
+    path: '/thread/:tid',
+    name: 'ViewThread',
+    component: ViewThread,
+    meta: { title: '帖子' },
   },
 ]
 

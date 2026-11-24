@@ -1,4 +1,5 @@
 <script setup>
+import { RouterLink } from 'vue-router'
 import { forumSections } from '../../mock'
 </script>
 
@@ -14,34 +15,46 @@ import { forumSections } from '../../mock'
         <a href="#" class="block-more">更多 ›</a>
       </div>
 
-      <div class="forum-table">
-        <div class="forum-row forum-row-head">
-          <div class="col col-forum">版块</div>
-          <div class="col col-threads">主题</div>
-          <div class="col col-posts">帖子</div>
-          <div class="col col-last">最后发表</div>
-        </div>
-
-        <div v-for="forum in section.forums" :key="forum.id" class="forum-row">
-          <div class="col col-forum">
-            <div class="forum-icon">{{ forum.icon }}</div>
-            <div class="forum-info">
-              <div class="forum-name-row">
-                <a :href="`#forum-${forum.id}`" class="forum-name">{{ forum.name }}</a>
-                <span class="today-new" v-if="forum.todayPosts > 0">
-                  今日: <em>{{ forum.todayPosts }}</em>
-                </span>
-              </div>
-              <p class="forum-desc">{{ forum.desc }}</p>
+      <div class="forum-grid">
+        <div v-for="forum in section.forums" :key="forum.id" class="forum-cell">
+          <RouterLink :to="`/forum/${forum.id}`" class="forum-icon-link">
+            <img :src="forum.iconUrl" :width="forum.iconWidth" :alt="forum.name" class="forum-icon-img" />
+          </RouterLink>
+          <div class="forum-body">
+            <div class="forum-name-row">
+              <RouterLink :to="`/forum/${forum.id}`" class="forum-name">{{ forum.name }}</RouterLink>
+              <span class="today-new" v-if="forum.todayPosts > 0">
+                今日: <em>{{ forum.todayPosts }}</em>
+              </span>
+            </div>
+            <p class="forum-desc">{{ forum.desc }}</p>
+            <div class="forum-sub" v-if="forum.subForums?.length">
+              <span class="sub-label">子版：</span>
+              <RouterLink
+                v-for="sub in forum.subForums"
+                :key="sub.id"
+                :to="`/forum/${sub.id}`"
+                class="sub-link"
+              >{{ sub.name }}</RouterLink>
+            </div>
+            <div class="forum-last" v-if="forum.lastPost">
+              <RouterLink :to="`/forum/${forum.id}`" class="last-title" :title="forum.lastPost.title">
+                {{ forum.lastPost.title }}
+              </RouterLink>
+              <span class="last-meta">
+                <a href="#" class="last-author">{{ forum.lastPost.author }}</a>
+                <span class="last-time">{{ forum.lastPost.time }}</span>
+              </span>
             </div>
           </div>
-          <div class="col col-threads">{{ forum.threads.toLocaleString() }}</div>
-          <div class="col col-posts">{{ forum.posts.toLocaleString() }}</div>
-          <div class="col col-last">
-            <a href="#" class="last-title" :title="forum.lastPost.title">{{ forum.lastPost.title }}</a>
-            <div class="last-meta">
-              <span class="last-author">{{ forum.lastPost.author }}</span>
-              <span class="last-time">{{ forum.lastPost.time }}</span>
+          <div class="forum-counts">
+            <div class="count-item">
+              <span class="count-num">{{ forum.threads.toLocaleString() }}</span>
+              <span class="count-label">主题</span>
+            </div>
+            <div class="count-item">
+              <span class="count-num">{{ forum.posts.toLocaleString() }}</span>
+              <span class="count-label">帖子</span>
             </div>
           </div>
         </div>
@@ -62,79 +75,50 @@ import { forumSections } from '../../mock'
   margin-left: 8px;
 }
 
-.forum-table {
+.forum-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   background: #fff;
 }
 
-.forum-row {
+.forum-cell {
   display: flex;
   align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-right: 1px solid var(--color-border-light);
   border-bottom: 1px solid var(--color-border-light);
   transition: background 0.15s;
 }
 
-.forum-row:not(.forum-row-head):hover {
+.forum-cell:hover {
   background: #fafcff;
 }
 
-.forum-row:last-child {
-  border-bottom: none;
+.forum-cell:nth-child(2n) {
+  border-right: none;
 }
 
-.col {
-  padding: 14px 12px;
-}
-
-.col-forum {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.col-threads,
-.col-posts {
-  width: 90px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-
-.col-last {
-  width: 260px;
-  padding-left: 16px;
-  border-left: 1px solid var(--color-border-light);
-}
-
-.forum-row-head {
-  background: #fafbfc;
-  color: var(--color-text-secondary);
-  font-size: 12px;
-  font-weight: 600;
-  height: 38px;
-}
-
-.forum-row-head .col {
-  padding: 0 12px;
-  line-height: 38px;
-}
-
-.forum-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 6px;
-  background: var(--color-primary-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
+.forum-icon-link {
   flex-shrink: 0;
 }
 
-.forum-info {
-  min-width: 0;
+.forum-icon-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  display: block;
+  border: 1px solid var(--color-border-light);
+  transition: transform 0.2s;
+}
+
+.forum-cell:hover .forum-icon-img {
+  transform: scale(1.04);
+}
+
+.forum-body {
   flex: 1;
+  min-width: 0;
 }
 
 .forum-name-row {
@@ -142,6 +126,7 @@ import { forumSections } from '../../mock'
   align-items: center;
   gap: 10px;
   margin-bottom: 4px;
+  flex-wrap: wrap;
 }
 
 .forum-name {
@@ -168,18 +153,44 @@ import { forumSections } from '../../mock'
 .forum-desc {
   font-size: 12px;
   color: var(--color-text-secondary);
+  line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 5px;
+}
+
+.forum-sub {
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.sub-label {
+  color: var(--color-text-light);
+}
+
+.sub-link {
+  color: var(--color-text-secondary);
+  margin-right: 6px;
+}
+
+.sub-link:hover {
+  color: var(--color-primary);
+}
+
+.forum-last {
+  font-size: 12px;
 }
 
 .last-title {
-  font-size: 13px;
-  color: var(--color-text);
   display: block;
+  color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 100%;
 }
 
 .last-title:hover {
@@ -189,12 +200,38 @@ import { forumSections } from '../../mock'
 .last-meta {
   font-size: 11px;
   color: var(--color-text-light);
-  margin-top: 3px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .last-author {
   color: var(--color-primary);
+}
+
+.forum-counts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  text-align: center;
+  padding-left: 12px;
+  border-left: 1px solid var(--color-border-light);
+}
+
+.count-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.count-num {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.count-label {
+  font-size: 11px;
+  color: var(--color-text-light);
 }
 </style>
