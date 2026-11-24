@@ -1,0 +1,90 @@
+:root {
+  --color-primary: #2b7cff;
+  --color-primary-dark: #1f66d8;
+  --color-primary-light: #eaf2ff;
+  --color-success: #52c41a;
+  --color-warning: #faad14;
+  --color-danger: #f5222d;
+  --color-text: #333;
+  --color-text-secondary: #999;
+  --color-text-light: #bbb;
+  --color-border: #e5e7eb;
+  --color-border-light: #f0f1f5;
+  --color-bg: #f5f6f8;
+  --color-bg-white: #fff;
+  --color-sidebar: #fafbfc;
+  --header-height: 56px;
+  --container-width: 1200px;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+.container {
+  width: var(--container-width);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+.card {
+  background: var(--color-bg-white);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.block-header {
+  height: 40px;
+  padding: 0 14px;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px 4px 0 0;
+  font-size: 14px;
+}
+
+.block-header .block-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.block-header .block-title .title-icon {
+  font-size: 16px;
+}
+
+.block-header .block-more {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.block-header .block-more:hover {
+  color: #fff;
+}
+
+.block-body {
+  padding: 0;
+}
+
+.clearfix::after {
+  content: '';
+  display: block;
+  clear: both;
+}
