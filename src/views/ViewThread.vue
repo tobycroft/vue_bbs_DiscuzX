@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { findThread, findForum } from '../mock'
 
@@ -19,6 +19,29 @@ watch(
 const forum = computed(() => (data.value ? findForum(data.value.info.fid) : null))
 
 const floors = computed(() => data.value?.posts || [])
+
+const votes = reactive({})
+function initVotes() {
+  Object.keys(votes).forEach((k) => delete votes[k])
+  ;(data.value?.posts || []).forEach((p) => {
+    votes[p.pid] = { support: p.support ?? 0, oppose: p.oppose ?? 0, my: null }
+  })
+}
+watch(() => data.value, initVotes, { immediate: true })
+
+function toggleVote(post, type) {
+  const v = votes[post.pid]
+  if (!v) return
+  if (v.my === type) {
+    v[type] = Math.max(0, v[type] - 1)
+    v.my = null
+    return
+  }
+  if (v.my) v[v.my] = Math.max(0, v[v.my] - 1)
+  v[type] += 1
+  v.my = type
+}
+
 const totalReplies = computed(() => data.value?.info.replies || 0)
 const pageSize = 30
 const totalPages = computed(() => Math.max(1, Math.ceil((totalReplies.value + 1) / pageSize)))
@@ -131,11 +154,27 @@ function submitReply() {
           </div>
 
           <div class="post-actions">
-            <a href="#" class="post-act">👍 赞 ({{ post.likes }})</a>
-            <a href="#quick-reply" class="post-act">回复</a>
-            <a href="#" class="post-act">引用</a>
-            <a href="#" class="post-act">举报</a>
-            <span v-if="post.locked" class="post-locked">🔒 已锁定</span>
+            <div class="post-acts-left">
+              <a href="#quick-reply" class="post-act">回复</a>
+              <a href="#" class="post-act">引用</a>
+              <a href="#" class="post-act">编辑</a>
+              <a href="#" class="post-act">举报</a>
+              <span v-if="post.locked" class="post-locked">🔒 已锁定</span>
+            </div>
+            <div class="vote-box" v-if="votes[post.pid]">
+              <button
+                type="button"
+                class="vote-btn vote-support"
+                :class="{ active: votes[post.pid].my === 'support' }"
+                @click="toggleVote(post, 'support')"
+              >👍 支持 <em>{{ votes[post.pid].support }}</em></button>
+              <button
+                type="button"
+                class="vote-btn vote-oppose"
+                :class="{ active: votes[post.pid].my === 'oppose' }"
+                @click="toggleVote(post, 'oppose')"
+              >👎 反对 <em>{{ votes[post.pid].oppose }}</em></button>
+            </div>
           </div>
         </div>
       </div>
@@ -564,9 +603,55 @@ function submitReply() {
   padding-top: 10px;
   border-top: 1px dashed var(--color-border-light);
   display: flex;
-  gap: 14px;
+  justify-content: space-between;
   align-items: center;
+  gap: 14px;
   font-size: 12px;
+}
+
+.post-acts-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vote-box {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.vote-btn em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.vote-support:hover,
+.vote-support.active {
+  border-color: var(--color-success);
+  color: var(--color-success);
+  background: #f6ffed;
+}
+
+.vote-oppose:hover,
+.vote-oppose.active {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background: #fff1f0;
 }
 
 .post-act {

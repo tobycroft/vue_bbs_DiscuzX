@@ -12,20 +12,39 @@ const allThreads = computed(() => getForumThreads(fid.value))
 
 const activeType = ref('all')
 const sortBy = ref('lastReply')
+const threadFilter = ref('all')
+const showPinned = ref(true)
+const collected = ref(false)
 const page = ref(1)
 const pageSize = 15
+
+const threadFilters = [
+  { id: 'all', name: '全部主题' },
+  { id: 'latest', name: '最新' },
+  { id: 'hot', name: '热门' },
+  { id: 'hotthread', name: '热帖' },
+  { id: 'essence', name: '精华' },
+]
 
 const filteredThreads = computed(() => {
   let list = allThreads.value
   if (activeType.value !== 'all') {
     list = list.filter((t) => t.typeId === activeType.value)
   }
-  const pinned = list.filter((t) => t.pinned)
-  const normal = list.filter((t) => !t.pinned)
+  if (threadFilter.value === 'hotthread') {
+    list = list.filter((t) => t.hot)
+  } else if (threadFilter.value === 'essence') {
+    list = list.filter((t) => t.essence)
+  }
+  const pinned = showPinned.value ? list.filter((t) => t.pinned) : []
+  const normal = showPinned.value ? list.filter((t) => !t.pinned) : list
+  let sortMode = sortBy.value
+  if (threadFilter.value === 'latest') sortMode = 'time'
+  if (threadFilter.value === 'hot') sortMode = 'views'
   const sorted = [...normal].sort((a, b) => {
-    if (sortBy.value === 'replies') return b.replies - a.replies
-    if (sortBy.value === 'views') return b.views - a.views
-    if (sortBy.value === 'time') return b.time.localeCompare(a.time)
+    if (sortMode === 'replies') return b.replies - a.replies
+    if (sortMode === 'views') return b.views - a.views
+    if (sortMode === 'time') return b.time.localeCompare(a.time)
     return b.lastReply.localeCompare(a.lastReply)
   })
   return [...pinned, ...sorted]
@@ -62,6 +81,9 @@ watch(
   () => route.params.fid,
   () => {
     activeType.value = 'all'
+    threadFilter.value = 'all'
+    showPinned.value = true
+    collected.value = false
     page.value = 1
   }
 )
@@ -95,6 +117,9 @@ watch(
           </div>
         </div>
         <div class="forum-head-actions">
+          <a href="#" class="btn-collect" :class="{ active: collected }" @click.prevent="collected = !collected">
+            {{ collected ? '已收藏' : '收藏本版' }}
+          </a>
           <a href="#post" class="btn-post">发布新帖</a>
         </div>
       </div>
@@ -141,6 +166,21 @@ watch(
           <a href="#" class="sort-item" :class="{ active: sortBy === 'views' }" @click.prevent="sortBy = 'views'">查看</a>
           <a href="#" class="sort-item" :class="{ active: sortBy === 'time' }" @click.prevent="sortBy = 'time'">发帖</a>
         </div>
+      </div>
+
+      <div class="thread-filter-bar">
+        <a
+          v-for="f in threadFilters"
+          :key="f.id"
+          href="#"
+          class="filter-item"
+          :class="{ active: threadFilter === f.id }"
+          @click.prevent="threadFilter = f.id; page = 1"
+        >{{ f.name }}</a>
+        <label class="show-pinned">
+          <input type="checkbox" v-model="showPinned" @change="page = 1" />
+          显示置顶
+        </label>
       </div>
 
       <div class="thread-table">
@@ -304,6 +344,30 @@ watch(
 
 .forum-head-actions {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-collect {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  background: #fff;
+}
+
+.btn-collect:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-collect.active {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+  background: #fffbe6;
 }
 
 .btn-post {
@@ -466,6 +530,43 @@ watch(
 .sort-item.active {
   background: var(--color-primary);
   color: #fff;
+}
+
+.thread-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  background: #fff;
+  border-bottom: 1px solid var(--color-border-light);
+  flex-wrap: wrap;
+}
+
+.filter-item {
+  padding: 5px 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  border-radius: 3px;
+}
+
+.filter-item:hover {
+  color: var(--color-primary);
+}
+
+.filter-item.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.show-pinned {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
 }
 
 .thread-table {

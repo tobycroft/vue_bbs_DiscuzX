@@ -196,14 +196,14 @@ export const forumSections = [
 ]
 
 export const hotTopics = [
-  { id: 1, rank: 1, title: 'Vue3 组合式 API 最佳实践分享', replies: 328, heat: 9820 },
-  { id: 2, rank: 2, title: 'DiscuzX 后端重构思路讨论', replies: 256, heat: 8760 },
-  { id: 3, rank: 3, title: '今天天气不错，大家周末去哪玩？', replies: 198, heat: 6540 },
-  { id: 4, rank: 4, title: '分享一个开源的 Vue 组件库', replies: 167, heat: 5430 },
-  { id: 5, rank: 5, title: 'MySQL 索引优化实战案例', replies: 142, heat: 4890 },
-  { id: 6, rank: 6, title: '希望增加夜间模式', replies: 121, heat: 4120 },
-  { id: 7, rank: 7, title: 'Nginx 反向代理配置踩坑记录', replies: 98, heat: 3560 },
-  { id: 8, rank: 8, title: 'Golang 泛型使用心得总结', replies: 87, heat: 3120 },
+  { id: 1, rank: 1, tid: 5001, title: 'Vue3 组合式 API 最佳实践分享', replies: 328, heat: 9820 },
+  { id: 2, rank: 2, tid: 6001, title: 'DiscuzX 后端重构思路讨论', replies: 256, heat: 8760 },
+  { id: 3, rank: 3, tid: 7001, title: '今天天气不错，大家周末去哪玩？', replies: 198, heat: 6540 },
+  { id: 4, rank: 4, tid: 5003, title: '分享一个开源的 Vue 组件库', replies: 167, heat: 5430 },
+  { id: 5, rank: 5, tid: 13001, title: 'MySQL 索引优化实战案例', replies: 142, heat: 4890 },
+  { id: 6, rank: 6, tid: 11001, title: '希望增加夜间模式', replies: 121, heat: 4120 },
+  { id: 7, rank: 7, tid: 14001, title: 'Nginx 反向代理配置踩坑记录', replies: 98, heat: 3560 },
+  { id: 8, rank: 8, tid: 6004, title: 'Golang 泛型使用心得总结', replies: 87, heat: 3120 },
 ]
 
 export const onlineMembers = [
@@ -346,6 +346,8 @@ export const threadPosts = {
       {
         pid: 90001,
         floor: 1,
+        support: 210,
+        oppose: 12,
         author: {
           name: '前端小王',
           role: 'moderator',
@@ -376,6 +378,8 @@ export const threadPosts = {
       {
         pid: 90002,
         floor: 2,
+        support: 45,
+        oppose: 3,
         author: {
           name: '原理党',
           role: 'member',
@@ -401,6 +405,8 @@ export const threadPosts = {
       {
         pid: 90003,
         floor: 3,
+        support: 88,
+        oppose: 5,
         author: {
           name: '码农老张',
           role: 'moderator',
@@ -428,6 +434,8 @@ export const threadPosts = {
       {
         pid: 90004,
         floor: 4,
+        support: 6,
+        oppose: 1,
         author: {
           name: '萌新报到',
           role: 'member',
@@ -472,6 +480,8 @@ export const threadPosts = {
       {
         pid: 91001,
         floor: 1,
+        support: 175,
+        oppose: 9,
         author: {
           name: '码农老张',
           role: 'moderator',
@@ -500,6 +510,8 @@ export const threadPosts = {
       {
         pid: 91002,
         floor: 2,
+        support: 52,
+        oppose: 2,
         author: {
           name: 'DBA小李',
           role: 'moderator',
@@ -525,6 +537,8 @@ export const threadPosts = {
       {
         pid: 91003,
         floor: 3,
+        support: 30,
+        oppose: 1,
         author: {
           name: '运维阿强',
           role: 'member',
